@@ -16,6 +16,12 @@ const Index = () => {
             <a href="#home" className="text-sm font-medium hover:text-primary transition-colors">Главная</a>
             <a href="#features" className="text-sm font-medium hover:text-primary transition-colors">Особенности</a>
             <a href="#stats" className="text-sm font-medium hover:text-primary transition-colors">Статистика</a>
+            <a href="/admin">
+              <Button variant="outline" className="gap-2">
+                <Icon name="Settings" size={16} />
+                Панель управления
+              </Button>
+            </a>
             <Button>Подключиться</Button>
           </nav>
         </div>
