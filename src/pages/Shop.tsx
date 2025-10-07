@@ -166,9 +166,13 @@ const Shop = () => {
           {tariffs.map((tariff) => (
             <Card 
               key={tariff.id} 
-              className={`relative overflow-hidden transition-all hover:scale-105 border-primary/20 hover:border-primary/50 bg-card/50 backdrop-blur ${
-                tariff.popular ? 'ring-2 ring-primary shadow-2xl shadow-primary/30 animate-pulse' : 'hover:shadow-lg hover:shadow-primary/20'
-              } ${(tariff as any).isNew ? 'ring-2 ring-yellow-500 shadow-2xl shadow-yellow-500/30' : ''}`}
+              className={`relative overflow-hidden transition-all hover:scale-105 bg-card/50 backdrop-blur ${
+                (tariff as any).isNew 
+                  ? 'ring-4 ring-yellow-500 border-yellow-500/50 shadow-[0_0_40px_rgba(234,179,8,0.6)] hover:shadow-[0_0_60px_rgba(234,179,8,0.8)] animate-pulse' 
+                  : tariff.popular 
+                    ? 'ring-2 ring-primary shadow-2xl shadow-primary/30 animate-pulse border-primary/20 hover:border-primary/50' 
+                    : 'border-primary/20 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/20'
+              }`}
             >
               {tariff.popular && (
                 <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-4 py-1 text-sm font-bold">
