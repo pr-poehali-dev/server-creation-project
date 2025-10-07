@@ -11,11 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Index = () => {
-  const [servers, setServers] = useState([
-    { id: 1, name: "Survival Server", customId: "survival-01", avatar: "", players: 245, status: "online", plugins: ["EssentialsX", "WorldEdit", "Vault"] },
-    { id: 2, name: "Creative Build", customId: "creative-main", avatar: "", players: 89, status: "online", plugins: ["WorldEdit", "FastAsyncWorldEdit"] },
-    { id: 3, name: "SkyBlock Pro", customId: "skyblock-vip", avatar: "", players: 156, status: "maintenance", plugins: ["EssentialsX", "Vault"] },
-  ]);
+  const [servers, setServers] = useState<any[]>([]);
 
   const [selectedServer, setSelectedServer] = useState<any>(null);
   const [uploadedPlugins, setUploadedPlugins] = useState<File[]>([]);
@@ -135,8 +131,27 @@ const Index = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {servers.map((server) => (
+        {servers.length === 0 ? (
+          <div className="max-w-2xl mx-auto text-center py-20">
+            <div className="w-24 h-24 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-6">
+              <Icon name="Server" size={48} className="text-slate-400" />
+            </div>
+            <h2 className="text-3xl font-bold mb-4">Нет серверов</h2>
+            <p className="text-lg text-muted-foreground mb-8">
+              Создайте первый сервер, чтобы начать работу
+            </p>
+            <Button 
+              size="lg" 
+              className="gap-2"
+              onClick={() => setIsDialogOpen(true)}
+            >
+              <Icon name="Plus" size={20} />
+              Создать первый сервер
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {servers.map((server) => (
             <Card key={server.id} className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="flex items-start gap-3">
@@ -413,7 +428,8 @@ const Index = () => {
               </CardContent>
             </Card>
           ))}
-        </div>
+          </div>
+        )}
       </main>
     </div>
   );
