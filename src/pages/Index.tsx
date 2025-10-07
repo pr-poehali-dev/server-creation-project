@@ -13,13 +13,12 @@ const Index = () => {
             <span className="text-xl font-bold">MineCraft Server</span>
           </div>
           <nav className="hidden md:flex items-center gap-6">
-            <a href="#home" className="text-sm font-medium hover:text-primary transition-colors">Главная</a>
-            <a href="#features" className="text-sm font-medium hover:text-primary transition-colors">Особенности</a>
-            <a href="#stats" className="text-sm font-medium hover:text-primary transition-colors">Статистика</a>
+            <a href="/" className="text-sm font-medium hover:text-primary transition-colors">Главная</a>
+            <a href="/servers" className="text-sm font-medium hover:text-primary transition-colors">Серверы</a>
             <a href="/admin">
-              <Button variant="outline" className="gap-2">
+              <Button variant="outline" className="gap-2" size="sm">
                 <Icon name="Settings" size={16} />
-                Панель управления
+                Панель
               </Button>
             </a>
             <Button>Подключиться</Button>
