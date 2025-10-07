@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Index = () => {
   const [servers, setServers] = useState<any[]>([]);
+  const [showTelegramDialog, setShowTelegramDialog] = useState(true);
 
   const [selectedServer, setSelectedServer] = useState<any>(null);
   const [uploadedPlugins, setUploadedPlugins] = useState<File[]>([]);
@@ -60,6 +61,47 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-black">
+      <Dialog open={showTelegramDialog} onOpenChange={setShowTelegramDialog}>
+        <DialogContent className="sm:max-w-md border-primary/20 bg-card/95 backdrop-blur">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-2xl">
+              <Icon name="Send" size={28} className="text-primary" />
+              Подпишитесь на наш Telegram!
+            </DialogTitle>
+            <DialogDescription className="text-base">
+              Получайте эксклюзивные новости, обновления сервера и специальные предложения первыми!
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-4 py-4">
+            <div className="flex items-center gap-3 p-4 bg-primary/10 rounded-lg border border-primary/20">
+              <Icon name="Gift" size={32} className="text-primary" />
+              <div>
+                <p className="font-semibold">Бонус за подписку!</p>
+                <p className="text-sm text-muted-foreground">Промокод на скидку 10% в магазине</p>
+              </div>
+            </div>
+            <Button 
+              size="lg" 
+              className="w-full gap-2 text-lg font-bold"
+              onClick={() => {
+                window.open('https://t.me/av7272g', '_blank');
+                setShowTelegramDialog(false);
+              }}
+            >
+              <Icon name="Send" size={24} />
+              Подписаться на Telegram
+            </Button>
+            <Button 
+              variant="ghost" 
+              onClick={() => setShowTelegramDialog(false)}
+              className="w-full"
+            >
+              Возможно, позже
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <header className="bg-card border-b sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
