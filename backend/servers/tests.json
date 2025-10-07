@@ -1,0 +1,54 @@
+{
+  "tests": [
+    {
+      "name": "Get servers without auth",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 400,
+      "expectedBody": {
+        "error": "X-User-Email header required"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get servers with auth",
+      "method": "GET",
+      "path": "/",
+      "headers": {
+        "X-User-Email": "test@example.com"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "servers": []
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Save servers",
+      "method": "POST",
+      "path": "/",
+      "headers": {
+        "X-User-Email": "test@example.com"
+      },
+      "body": {
+        "servers": [
+          {
+            "id": "srv-test-1",
+            "name": "Test Server",
+            "version": "1.20.1",
+            "customId": "test-id",
+            "players": 5,
+            "maxPlayers": 20,
+            "status": "online"
+          }
+        ]
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true,
+        "saved": 1
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

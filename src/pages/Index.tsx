@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
@@ -11,10 +11,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Index = () => {
-  const [servers, setServers] = useState<any[]>(() => {
-    const savedServers = localStorage.getItem('servers');
-    return savedServers ? JSON.parse(savedServers) : [];
-  });
+  const [servers, setServers] = useState<any[]>([]);
+  const [isLoadingServers, setIsLoadingServers] = useState(true);
   const [showTelegramDialog, setShowTelegramDialog] = useState(true);
   const [showInviteDialog, setShowInviteDialog] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
@@ -46,9 +44,80 @@ const Index = () => {
     localStorage.setItem('selectedEmail', selectedEmail);
   }, [isAuthenticated, selectedEmail]);
 
+  const BACKEND_URL = 'https://functions.poehali.dev/d7adc20e-e211-4e7b-b230-aa3ffe6cd82c';
+
+  const syncServersToCloud = useCallback(async (serversToSync: any[]) => {
+    if (!isAuthenticated || !selectedEmail) return;
+    
+    try {
+      await fetch(BACKEND_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-User-Email': selectedEmail
+        },
+        body: JSON.stringify({ servers: serversToSync })
+      });
+    } catch (error) {
+      console.error('Failed to sync servers to cloud:', error);
+    }
+  }, [isAuthenticated, selectedEmail]);
+
+  const loadServersFromCloud = useCallback(async () => {
+    if (!isAuthenticated || !selectedEmail) {
+      const savedServers = localStorage.getItem('servers');
+      setServers(savedServers ? JSON.parse(savedServers) : []);
+      setIsLoadingServers(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(BACKEND_URL, {
+        method: 'GET',
+        headers: {
+          'X-User-Email': selectedEmail
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        const cloudServers = data.servers || [];
+        
+        const formattedServers = cloudServers.map((s: any) => ({
+          id: s.server_id,
+          name: s.server_name,
+          version: s.version,
+          customId: s.custom_id,
+          players: s.players,
+          maxPlayers: s.max_players,
+          status: s.status
+        }));
+        
+        setServers(formattedServers);
+        localStorage.setItem('servers', JSON.stringify(formattedServers));
+      } else {
+        const savedServers = localStorage.getItem('servers');
+        setServers(savedServers ? JSON.parse(savedServers) : []);
+      }
+    } catch (error) {
+      console.error('Failed to load servers from cloud:', error);
+      const savedServers = localStorage.getItem('servers');
+      setServers(savedServers ? JSON.parse(savedServers) : []);
+    }
+    
+    setIsLoadingServers(false);
+  }, [isAuthenticated, selectedEmail]);
+
   useEffect(() => {
-    localStorage.setItem('servers', JSON.stringify(servers));
-  }, [servers]);
+    loadServersFromCloud();
+  }, [loadServersFromCloud]);
+
+  useEffect(() => {
+    if (servers.length > 0 && !isLoadingServers) {
+      localStorage.setItem('servers', JSON.stringify(servers));
+      syncServersToCloud(servers);
+    }
+  }, [servers, isLoadingServers, syncServersToCloud]);
 
   const handleCopyInviteLink = () => {
     const inviteLink = `${window.location.origin}?ref=invite`;
@@ -77,11 +146,13 @@ const Index = () => {
     }
 
     const newServer = {
-      id: Math.max(...servers.map(s => s.id), 0) + 1,
+      id: `srv-${Date.now()}`,
       name: newServerName,
       customId: newServerCustomId,
       avatar: "",
       players: 0,
+      maxPlayers: 20,
+      version: "1.20.1",
       status: "online" as const,
       plugins: []
     };
