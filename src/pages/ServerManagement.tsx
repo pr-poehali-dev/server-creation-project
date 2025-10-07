@@ -43,7 +43,7 @@ const ServerManagement = () => {
     const savedServers = localStorage.getItem('servers');
     if (savedServers && serverId) {
       const servers = JSON.parse(savedServers);
-      const foundServer = servers.find((s: any) => s.id === parseInt(serverId));
+      const foundServer = servers.find((s: any) => s.id === serverId || s.id === parseInt(serverId));
       if (foundServer) {
         setServer(foundServer);
         setServerVersion(foundServer.version || '1.20.1');
