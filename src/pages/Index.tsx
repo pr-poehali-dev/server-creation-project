@@ -115,6 +115,10 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <Button variant="outline" onClick={() => window.location.href = '/server-settings'} className="gap-2">
+                <Icon name="Settings" size={20} />
+                Настройки
+              </Button>
               <Button variant="outline" onClick={() => window.location.href = '/shop'} className="gap-2">
                 <Icon name="Store" size={20} />
                 Магазин
