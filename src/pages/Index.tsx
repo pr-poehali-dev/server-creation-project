@@ -15,7 +15,15 @@ const Index = () => {
   const [showTelegramDialog, setShowTelegramDialog] = useState(true);
   const [showInviteDialog, setShowInviteDialog] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [showEmailSelectDialog, setShowEmailSelectDialog] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [selectedEmail, setSelectedEmail] = useState('');
+
+  const googleAccounts = [
+    { email: 'user@gmail.com', name: 'Основной аккаунт', avatar: '👤' },
+    { email: 'work@gmail.com', name: 'Рабочий аккаунт', avatar: '💼' },
+    { email: 'gaming@gmail.com', name: 'Игровой аккаунт', avatar: '🎮' },
+  ];
 
   const [selectedServer, setSelectedServer] = useState<any>(null);
   const [uploadedPlugins, setUploadedPlugins] = useState<File[]>([]);
@@ -192,8 +200,8 @@ const Index = () => {
               size="lg" 
               className="w-full gap-2 text-lg font-bold bg-white text-black hover:bg-gray-100 border border-gray-300"
               onClick={() => {
-                setIsAuthenticated(true);
                 setShowAuthDialog(false);
+                setShowEmailSelectDialog(true);
               }}
             >
               <svg className="w-6 h-6" viewBox="0 0 24 24">
@@ -207,6 +215,59 @@ const Index = () => {
             <p className="text-xs text-center text-muted-foreground">
               Нажимая кнопку, вы соглашаетесь с условиями использования
             </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showEmailSelectDialog} onOpenChange={setShowEmailSelectDialog}>
+        <DialogContent className="sm:max-w-md border-primary/20 bg-card/95 backdrop-blur">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-2xl">
+              <Icon name="Mail" size={28} className="text-primary" />
+              Выберите аккаунт
+            </DialogTitle>
+            <DialogDescription className="text-base">
+              Выберите Google аккаунт для входа в систему
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 py-4">
+            {googleAccounts.map((account) => (
+              <button
+                key={account.email}
+                onClick={() => {
+                  setSelectedEmail(account.email);
+                  setIsAuthenticated(true);
+                  setShowEmailSelectDialog(false);
+                }}
+                className="flex items-center gap-4 p-4 rounded-lg border-2 border-border hover:border-primary hover:bg-primary/5 transition-all cursor-pointer group"
+              >
+                <div className="text-4xl">{account.avatar}</div>
+                <div className="flex-1 text-left">
+                  <p className="font-semibold text-lg group-hover:text-primary transition-colors">{account.name}</p>
+                  <p className="text-sm text-muted-foreground">{account.email}</p>
+                </div>
+                <Icon name="ChevronRight" size={24} className="text-muted-foreground group-hover:text-primary transition-colors" />
+              </button>
+            ))}
+            <div className="relative my-2">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-border"></div>
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span className="bg-card px-2 text-muted-foreground">или</span>
+              </div>
+            </div>
+            <Button 
+              variant="outline" 
+              className="w-full gap-2"
+              onClick={() => {
+                setShowEmailSelectDialog(false);
+                setShowAuthDialog(true);
+              }}
+            >
+              <Icon name="UserPlus" size={20} />
+              Добавить другой аккаунт
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
