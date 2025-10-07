@@ -417,15 +417,13 @@ const Index = () => {
                 </>
               )}
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button 
-                    className="gap-2"
-                    disabled={servers.length >= MAX_SERVERS}
-                  >
-                    <Icon name="Plus" size={18} />
-                    Добавить сервер
-                  </Button>
-                </DialogTrigger>
+                <Button 
+                  className="gap-2"
+                  onClick={() => window.location.href = '/shop'}
+                >
+                  <Icon name="Plus" size={18} />
+                  Добавить сервер
+                </Button>
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Создать новый сервер</DialogTitle>
@@ -483,7 +481,7 @@ const Index = () => {
             <Button 
               size="lg" 
               className="gap-2"
-              onClick={() => setIsDialogOpen(true)}
+              onClick={() => window.location.href = '/shop'}
             >
               <Icon name="Plus" size={20} />
               Создать первый сервер
