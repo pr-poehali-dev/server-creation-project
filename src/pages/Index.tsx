@@ -528,10 +528,10 @@ const Index = () => {
                 <div>
                   <div className="flex items-center gap-2 text-sm mb-2">
                     <Icon name="Puzzle" size={16} className="text-muted-foreground" />
-                    <span className="text-muted-foreground">Плагины: {server.plugins.length}</span>
+                    <span className="text-muted-foreground">Плагины: {server.plugins?.length || 0}</span>
                   </div>
                   <div className="flex flex-wrap gap-1">
-                    {server.plugins.slice(0, 3).map((plugin, idx) => (
+                    {(server.plugins || []).slice(0, 3).map((plugin: any, idx: number) => (
                       <Badge key={idx} variant="outline" className="text-xs">{plugin}</Badge>
                     ))}
                   </div>
