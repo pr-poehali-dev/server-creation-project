@@ -115,6 +115,27 @@ const Shop = () => {
         "Доступ к бета-функциям",
         "Пожизненная VIP поддержка"
       ]
+    },
+    {
+      id: 8,
+      name: "ANARCHY",
+      price: 12999,
+      icon: "Flame",
+      color: "bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600",
+      isNew: true,
+      features: [
+        "Эксклюзивный анархия режим",
+        "Всё из тарифа Unlimited",
+        "Полная свобода действий без правил",
+        "Приоритетный доступ к новым функциям",
+        "Личный выделенный сервер с максимальными мощностями",
+        "Безлимитные ресурсы и возможности",
+        "Кастомные миры и генерация",
+        "Доступ к эксклюзивным ивентам",
+        "Премиум поддержка 24/7/365",
+        "Уникальные привилегии и статус",
+        "Пожизненные обновления и апгрейды"
+      ]
     }
   ];
 
@@ -147,11 +168,16 @@ const Shop = () => {
               key={tariff.id} 
               className={`relative overflow-hidden transition-all hover:scale-105 border-primary/20 hover:border-primary/50 bg-card/50 backdrop-blur ${
                 tariff.popular ? 'ring-2 ring-primary shadow-2xl shadow-primary/30 animate-pulse' : 'hover:shadow-lg hover:shadow-primary/20'
-              }`}
+              } ${(tariff as any).isNew ? 'ring-2 ring-yellow-500 shadow-2xl shadow-yellow-500/30' : ''}`}
             >
               {tariff.popular && (
                 <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-4 py-1 text-sm font-bold">
                   ПОПУЛЯРНЫЙ
+                </div>
+              )}
+              {(tariff as any).isNew && (
+                <div className="absolute top-0 right-0 bg-gradient-to-r from-yellow-400 to-amber-500 text-black px-4 py-1 text-sm font-bold shadow-lg shadow-yellow-500/50">
+                  НОВОЕ
                 </div>
               )}
               
