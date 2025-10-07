@@ -18,6 +18,7 @@ const Index = () => {
   const [showEmailSelectDialog, setShowEmailSelectDialog] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedEmail, setSelectedEmail] = useState('');
+  const [customEmail, setCustomEmail] = useState('');
 
   const googleAccounts = [
     { email: 'user@gmail.com', name: 'Основной аккаунт', avatar: '👤' },
@@ -254,20 +255,39 @@ const Index = () => {
                 <div className="w-full border-t border-border"></div>
               </div>
               <div className="relative flex justify-center text-xs">
-                <span className="bg-card px-2 text-muted-foreground">или</span>
+                <span className="bg-card px-2 text-muted-foreground">или введите свою почту</span>
               </div>
             </div>
-            <Button 
-              variant="outline" 
-              className="w-full gap-2"
-              onClick={() => {
-                setShowEmailSelectDialog(false);
-                setShowAuthDialog(true);
-              }}
-            >
-              <Icon name="UserPlus" size={20} />
-              Добавить другой аккаунт
-            </Button>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="customEmail" className="text-sm font-medium">
+                Ваша почта Google
+              </Label>
+              <div className="flex gap-2">
+                <Input
+                  id="customEmail"
+                  type="email"
+                  placeholder="example@gmail.com"
+                  value={customEmail}
+                  onChange={(e) => setCustomEmail(e.target.value)}
+                  className="flex-1"
+                />
+                <Button
+                  onClick={() => {
+                    if (customEmail.trim()) {
+                      setSelectedEmail(customEmail);
+                      setIsAuthenticated(true);
+                      setShowEmailSelectDialog(false);
+                      setCustomEmail('');
+                    }
+                  }}
+                  disabled={!customEmail.trim()}
+                  className="gap-2"
+                >
+                  <Icon name="LogIn" size={20} />
+                  Войти
+                </Button>
+              </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
