@@ -13,7 +13,11 @@ const Shop = () => {
   const [giftDialogOpen, setGiftDialogOpen] = useState(false);
   const [friendEmail, setFriendEmail] = useState("");
   const [referralDialogOpen, setReferralDialogOpen] = useState(false);
+  const [adminGrantDialogOpen, setAdminGrantDialogOpen] = useState(false);
+  const [grantUserId, setGrantUserId] = useState("");
   const { toast } = useToast();
+
+  const isDeveloper = true;
 
   const handleGiftTariff = () => {
     if (!friendEmail.trim()) {
@@ -30,6 +34,23 @@ const Shop = () => {
     });
     setGiftDialogOpen(false);
     setFriendEmail("");
+  };
+
+  const handleGrantTariff = () => {
+    if (!grantUserId.trim()) {
+      toast({
+        title: "Ошибка",
+        description: "Введите ID или email пользователя",
+        variant: "destructive"
+      });
+      return;
+    }
+    toast({
+      title: "Тариф выдан! 🔑",
+      description: `Тариф ${selectedTariff?.name} выдан пользователю ${grantUserId}`,
+    });
+    setAdminGrantDialogOpen(false);
+    setGrantUserId("");
   };
 
   const handleCopyReferralLink = () => {
@@ -265,6 +286,19 @@ const Shop = () => {
                   <Icon name="Gift" size={20} />
                   Подарить другу
                 </Button>
+                {isDeveloper && (
+                  <Button 
+                    className="w-full gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700" 
+                    size="lg"
+                    onClick={() => {
+                      setSelectedTariff(tariff);
+                      setAdminGrantDialogOpen(true);
+                    }}
+                  >
+                    <Icon name="Key" size={20} />
+                    Выдать тариф (DEV)
+                  </Button>
+                )}
               </CardFooter>
             </Card>
           ))}
@@ -443,6 +477,59 @@ const Shop = () => {
             >
               <Icon name="Share2" size={20} />
               Поделиться ссылкой
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={adminGrantDialogOpen} onOpenChange={setAdminGrantDialogOpen}>
+        <DialogContent className="sm:max-w-md border-purple-500/50 bg-gradient-to-br from-card/95 to-purple-950/20 backdrop-blur">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-2xl">
+              <Icon name="ShieldCheck" size={28} className="text-purple-400" />
+              Выдать тариф (Разработчик)
+            </DialogTitle>
+            <DialogDescription>
+              {selectedTariff && `Выдача тарифа "${selectedTariff.name}" пользователю`}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="p-3 bg-purple-500/20 rounded-lg border border-purple-500/30 flex items-center gap-2">
+              <Icon name="AlertTriangle" size={20} className="text-purple-400" />
+              <p className="text-sm text-purple-200">Админ-панель для разработчиков</p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="grant-user-id">ID или Email пользователя</Label>
+              <Input
+                id="grant-user-id"
+                type="text"
+                placeholder="user@example.com или user_id_123"
+                value={grantUserId}
+                onChange={(e) => setGrantUserId(e.target.value)}
+                className="border-purple-500/30"
+              />
+            </div>
+
+            <div className="p-4 bg-purple-500/10 rounded-lg border border-purple-500/20">
+              <div className="space-y-2 text-sm">
+                <p className="font-semibold text-purple-300">Что произойдёт:</p>
+                <ul className="space-y-1 text-muted-foreground">
+                  <li>✓ Тариф активируется мгновенно</li>
+                  <li>✓ Пользователь получит уведомление</li>
+                  <li>✓ Действие будет записано в лог</li>
+                  <li>✓ Без списания средств</li>
+                </ul>
+              </div>
+            </div>
+
+            <Button 
+              size="lg" 
+              className="w-full gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+              onClick={handleGrantTariff}
+            >
+              <Icon name="Key" size={20} />
+              Выдать тариф бесплатно
             </Button>
           </div>
         </DialogContent>
