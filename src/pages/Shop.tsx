@@ -66,6 +66,19 @@ const Shop = () => {
 
   const tariffs = [
     {
+      id: 0,
+      name: "Мини",
+      price: 1,
+      icon: "Bomb",
+      color: "bg-red-600",
+      features: [
+        "Онлайн с 0 до 50 игроков",
+        "Доступ к консоли сервера",
+        "Базовые команды управления",
+        "1 GB RAM"
+      ]
+    },
+    {
       id: 1,
       name: "Игрок",
       price: 99,
