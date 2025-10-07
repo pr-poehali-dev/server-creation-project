@@ -19,6 +19,11 @@ const Index = () => {
 
   const [selectedServer, setSelectedServer] = useState<any>(null);
   const [uploadedPlugins, setUploadedPlugins] = useState<File[]>([]);
+  const [newServerName, setNewServerName] = useState("");
+  const [newServerCustomId, setNewServerCustomId] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const MAX_SERVERS = 20;
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -29,6 +34,32 @@ const Index = () => {
 
   const handleServerUpdate = (serverId: number, updates: any) => {
     setServers(servers.map(s => s.id === serverId ? { ...s, ...updates } : s));
+  };
+
+  const handleAddServer = () => {
+    if (!newServerName.trim() || !newServerCustomId.trim()) {
+      return;
+    }
+
+    if (servers.length >= MAX_SERVERS) {
+      alert(`Достигнут максимальный лимит: ${MAX_SERVERS} серверов`);
+      return;
+    }
+
+    const newServer = {
+      id: Math.max(...servers.map(s => s.id), 0) + 1,
+      name: newServerName,
+      customId: newServerCustomId,
+      avatar: "",
+      players: 0,
+      status: "online" as const,
+      plugins: []
+    };
+
+    setServers([...servers, newServer]);
+    setNewServerName("");
+    setNewServerCustomId("");
+    setIsDialogOpen(false);
   };
 
   return (
@@ -45,31 +76,60 @@ const Index = () => {
                 <p className="text-sm text-muted-foreground">Minecraft Server Manager</p>
               </div>
             </div>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button className="gap-2">
-                  <Icon name="Plus" size={18} />
-                  Добавить сервер
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Создать новый сервер</DialogTitle>
-                  <DialogDescription>Добавьте новый Minecraft сервер в панель</DialogDescription>
-                </DialogHeader>
-                <div className="space-y-4 pt-4">
-                  <div className="space-y-2">
-                    <Label>Название сервера</Label>
-                    <Input placeholder="Мой сервер" />
+            <div className="flex items-center gap-3">
+              <Badge variant="outline" className="text-sm">
+                {servers.length} / {MAX_SERVERS} серверов
+              </Badge>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button 
+                    className="gap-2"
+                    disabled={servers.length >= MAX_SERVERS}
+                  >
+                    <Icon name="Plus" size={18} />
+                    Добавить сервер
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Создать новый сервер</DialogTitle>
+                    <DialogDescription>
+                      Добавьте новый Minecraft сервер в панель ({servers.length}/{MAX_SERVERS})
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 pt-4">
+                    <div className="space-y-2">
+                      <Label>Название сервера</Label>
+                      <Input 
+                        placeholder="Мой сервер"
+                        value={newServerName}
+                        onChange={(e) => setNewServerName(e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Кастомный ID</Label>
+                      <Input 
+                        placeholder="my-server-01"
+                        value={newServerCustomId}
+                        onChange={(e) => setNewServerCustomId(e.target.value)}
+                        className="font-mono"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Только латиница, цифры и дефис
+                      </p>
+                    </div>
+                    <Button 
+                      className="w-full"
+                      onClick={handleAddServer}
+                      disabled={!newServerName.trim() || !newServerCustomId.trim()}
+                    >
+                      <Icon name="Plus" size={16} className="mr-2" />
+                      Создать сервер
+                    </Button>
                   </div>
-                  <div className="space-y-2">
-                    <Label>Кастомный ID</Label>
-                    <Input placeholder="my-server-01" />
-                  </div>
-                  <Button className="w-full">Создать сервер</Button>
-                </div>
-              </DialogContent>
-            </Dialog>
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
         </div>
       </header>
