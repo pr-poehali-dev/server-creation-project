@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
@@ -9,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 
 const Shop = () => {
+  const navigate = useNavigate();
   const [selectedTariff, setSelectedTariff] = useState<any>(null);
   const [giftDialogOpen, setGiftDialogOpen] = useState(false);
   const [friendEmail, setFriendEmail] = useState("");
@@ -205,8 +207,9 @@ const Shop = () => {
             <Icon name="Store" size={32} className="text-primary" />
             <h1 className="text-2xl font-bold">Магазин тарифов</h1>
           </div>
-          <Button variant="ghost" onClick={() => window.history.back()}>
+          <Button variant="ghost" className="gap-2" onClick={() => navigate('/')}>
             <Icon name="ArrowLeft" size={20} />
+            Вернуться в меню
             Назад
           </Button>
         </div>
