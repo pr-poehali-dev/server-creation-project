@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
@@ -16,8 +16,12 @@ const Index = () => {
   const [showInviteDialog, setShowInviteDialog] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showEmailSelectDialog, setShowEmailSelectDialog] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [selectedEmail, setSelectedEmail] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem('isAuthenticated') === 'true';
+  });
+  const [selectedEmail, setSelectedEmail] = useState(() => {
+    return localStorage.getItem('selectedEmail') || '';
+  });
   const [customEmail, setCustomEmail] = useState('');
 
   const googleAccounts = [
@@ -33,6 +37,11 @@ const Index = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const MAX_SERVERS = 20;
+
+  useEffect(() => {
+    localStorage.setItem('isAuthenticated', String(isAuthenticated));
+    localStorage.setItem('selectedEmail', selectedEmail);
+  }, [isAuthenticated, selectedEmail]);
 
   const handleCopyInviteLink = () => {
     const inviteLink = `${window.location.origin}?ref=invite`;
