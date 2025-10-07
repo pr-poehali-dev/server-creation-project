@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,7 +17,14 @@ const Shop = () => {
   const [referralDialogOpen, setReferralDialogOpen] = useState(false);
   const [adminGrantDialogOpen, setAdminGrantDialogOpen] = useState(false);
   const [grantUserId, setGrantUserId] = useState("");
+  const [selectedEmail, setSelectedEmail] = useState('');
   const { toast } = useToast();
+
+  const BACKEND_URL = 'https://functions.poehali.dev/d7adc20e-e211-4e7b-b230-aa3ffe6cd82c';
+
+  useEffect(() => {
+    setSelectedEmail(localStorage.getItem('selectedEmail') || '');
+  }, []);
 
   const isDeveloper = true;
 
@@ -53,6 +60,57 @@ const Shop = () => {
     });
     setAdminGrantDialogOpen(false);
     setGrantUserId("");
+  };
+
+  const createServerForTariff = async (tariff: any) => {
+    const serverName = `${tariff.name} Server`;
+    const serverId = `srv-${Date.now()}`;
+    
+    const newServer = {
+      id: serverId,
+      name: serverName,
+      version: '1.20.1',
+      customId: `${tariff.name.toLowerCase()}-${Date.now()}`,
+      players: 0,
+      maxPlayers: tariff.name === 'FREE' ? 10 : tariff.name === 'БАЗОВЫЙ' ? 20 : tariff.name === 'ПОПУЛЯРНЫЙ' ? 50 : 100,
+      status: 'online',
+      plugins: []
+    };
+
+    const savedServers = localStorage.getItem('servers');
+    const servers = savedServers ? JSON.parse(savedServers) : [];
+    servers.push(newServer);
+    localStorage.setItem('servers', JSON.stringify(servers));
+
+    if (selectedEmail) {
+      try {
+        await fetch(BACKEND_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-User-Email': selectedEmail
+          },
+          body: JSON.stringify({ servers: [newServer] })
+        });
+      } catch (error) {
+        console.error('Failed to sync server to cloud:', error);
+      }
+    }
+
+    return newServer;
+  };
+
+  const handlePurchaseTariff = async (tariff: any) => {
+    const server = await createServerForTariff(tariff);
+    
+    toast({
+      title: tariff.isFree ? "Бесплатный сервер создан! 🎉" : "Покупка успешна! 🎉",
+      description: `Сервер "${server.name}" создан и готов к работе`,
+    });
+
+    setTimeout(() => {
+      navigate('/');
+    }, 1500);
   };
 
   const handleCopyReferralLink = () => {
@@ -315,6 +373,7 @@ const Shop = () => {
                   className="w-full gap-2" 
                   variant={(tariff as any).isFree || tariff.popular || (tariff as any).isNew ? "default" : "outline"}
                   size="lg"
+                  onClick={() => handlePurchaseTariff(tariff)}
                 >
                   <Icon name={(tariff as any).isFree ? "Download" : "ShoppingCart"} size={20} />
                   {(tariff as any).isFree ? "Получить бесплатно" : "Купить тариф"}
