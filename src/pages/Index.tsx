@@ -11,7 +11,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Index = () => {
-  const [servers, setServers] = useState<any[]>([]);
+  const [servers, setServers] = useState<any[]>(() => {
+    const savedServers = localStorage.getItem('servers');
+    return savedServers ? JSON.parse(savedServers) : [];
+  });
   const [showTelegramDialog, setShowTelegramDialog] = useState(true);
   const [showInviteDialog, setShowInviteDialog] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
@@ -42,6 +45,10 @@ const Index = () => {
     localStorage.setItem('isAuthenticated', String(isAuthenticated));
     localStorage.setItem('selectedEmail', selectedEmail);
   }, [isAuthenticated, selectedEmail]);
+
+  useEffect(() => {
+    localStorage.setItem('servers', JSON.stringify(servers));
+  }, [servers]);
 
   const handleCopyInviteLink = () => {
     const inviteLink = `${window.location.origin}?ref=invite`;
