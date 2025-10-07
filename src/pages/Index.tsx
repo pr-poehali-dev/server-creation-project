@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 const Index = () => {
   const [servers, setServers] = useState<any[]>([]);
   const [showTelegramDialog, setShowTelegramDialog] = useState(true);
+  const [showInviteDialog, setShowInviteDialog] = useState(false);
 
   const [selectedServer, setSelectedServer] = useState<any>(null);
   const [uploadedPlugins, setUploadedPlugins] = useState<File[]>([]);
@@ -21,6 +22,11 @@ const Index = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const MAX_SERVERS = 20;
+
+  const handleCopyInviteLink = () => {
+    const inviteLink = `${window.location.origin}?ref=invite`;
+    navigator.clipboard.writeText(inviteLink);
+  };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -102,6 +108,65 @@ const Index = () => {
         </DialogContent>
       </Dialog>
 
+      <Dialog open={showInviteDialog} onOpenChange={setShowInviteDialog}>
+        <DialogContent className="sm:max-w-md border-primary/20 bg-card/95 backdrop-blur">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-2xl">
+              <Icon name="UserPlus" size={28} className="text-primary" />
+              Пригласить друзей
+            </DialogTitle>
+            <DialogDescription className="text-base">
+              Получайте бонусы за каждого приглашённого друга!
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-4 py-4">
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 p-4 bg-primary/10 rounded-lg border border-primary/20">
+                <Icon name="Gift" size={32} className="text-primary" />
+                <div>
+                  <p className="font-semibold">Ваши бонусы</p>
+                  <p className="text-sm text-muted-foreground">+1 слот сервера за каждого друга</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-4 bg-primary/10 rounded-lg border border-primary/20">
+                <Icon name="Zap" size={32} className="text-primary" />
+                <div>
+                  <p className="font-semibold">Бонус другу</p>
+                  <p className="text-sm text-muted-foreground">Скидка 15% на первую покупку</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold">Ваша реферальная ссылка</Label>
+              <div className="flex gap-2">
+                <Input 
+                  value={`${window.location.origin}?ref=invite`} 
+                  readOnly 
+                  className="font-mono text-sm"
+                />
+                <Button onClick={handleCopyInviteLink}>
+                  <Icon name="Copy" size={18} />
+                </Button>
+              </div>
+            </div>
+
+            <Button 
+              size="lg" 
+              className="w-full gap-2 text-lg font-bold"
+              onClick={() => {
+                handleCopyInviteLink();
+                setShowInviteDialog(false);
+              }}
+            >
+              <Icon name="Copy" size={24} />
+              Скопировать ссылку
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <header className="bg-card border-b sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -115,6 +180,10 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <Button variant="outline" onClick={() => setShowInviteDialog(true)} className="gap-2">
+                <Icon name="UserPlus" size={20} />
+                Пригласить
+              </Button>
               <Button variant="outline" onClick={() => window.location.href = '/server-settings'} className="gap-2">
                 <Icon name="Settings" size={20} />
                 Настройки

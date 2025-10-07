@@ -12,6 +12,7 @@ const ServerSettings = () => {
   const [uploadedBuild, setUploadedBuild] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [installedPlugins, setInstalledPlugins] = useState<string[]>(["AuthMe"]);
   const { toast } = useToast();
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -189,6 +190,42 @@ const ServerSettings = () => {
                     <span>Максимальный размер файла: 500 МБ</span>
                   </li>
                 </ul>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-primary/20 hover:border-primary/50 bg-card/50 backdrop-blur transition-all">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Icon name="Puzzle" size={24} className="text-primary" />
+                Установленные плагины
+              </CardTitle>
+              <CardDescription>
+                Плагины, которые активны на вашем сервере
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {installedPlugins.map((plugin, idx) => (
+                  <div 
+                    key={idx}
+                    className="flex items-center justify-between p-4 bg-primary/10 rounded-lg border border-primary/20 hover:border-primary/50 transition-all"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
+                        <Icon name="Shield" size={20} className="text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-semibold">{plugin}</p>
+                        <p className="text-xs text-muted-foreground">Плагин авторизации</p>
+                      </div>
+                    </div>
+                    <Badge className="gap-1">
+                      <Icon name="Check" size={14} />
+                      Активен
+                    </Badge>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
