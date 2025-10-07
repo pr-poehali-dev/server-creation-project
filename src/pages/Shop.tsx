@@ -1,9 +1,46 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 
 const Shop = () => {
+  const [selectedTariff, setSelectedTariff] = useState<any>(null);
+  const [giftDialogOpen, setGiftDialogOpen] = useState(false);
+  const [friendEmail, setFriendEmail] = useState("");
+  const [referralDialogOpen, setReferralDialogOpen] = useState(false);
+  const { toast } = useToast();
+
+  const handleGiftTariff = () => {
+    if (!friendEmail.trim()) {
+      toast({
+        title: "Ошибка",
+        description: "Введите email друга",
+        variant: "destructive"
+      });
+      return;
+    }
+    toast({
+      title: "Подарок отправлен! 🎁",
+      description: `Тариф ${selectedTariff?.name} отправлен на ${friendEmail}`
+    });
+    setGiftDialogOpen(false);
+    setFriendEmail("");
+  };
+
+  const handleCopyReferralLink = () => {
+    const refLink = `${window.location.origin}/shop?ref=friend123`;
+    navigator.clipboard.writeText(refLink);
+    toast({
+      title: "Ссылка скопирована!",
+      description: "Отправьте реферальную ссылку другу"
+    });
+  };
+
   const tariffs = [
     {
       id: 1,
@@ -207,21 +244,81 @@ const Shop = () => {
                 </ul>
               </CardContent>
 
-              <CardFooter>
+              <CardFooter className="flex-col gap-2">
                 <Button 
                   className="w-full gap-2" 
-                  variant={tariff.popular ? "default" : "outline"}
+                  variant={tariff.popular || (tariff as any).isNew ? "default" : "outline"}
                   size="lg"
                 >
                   <Icon name="ShoppingCart" size={20} />
                   Купить тариф
+                </Button>
+                <Button 
+                  className="w-full gap-2" 
+                  variant="secondary"
+                  size="lg"
+                  onClick={() => {
+                    setSelectedTariff(tariff);
+                    setGiftDialogOpen(true);
+                  }}
+                >
+                  <Icon name="Gift" size={20} />
+                  Подарить другу
                 </Button>
               </CardFooter>
             </Card>
           ))}
         </div>
 
-        <div className="mt-16 text-center">
+        <div className="mt-16 space-y-6">
+          <Card className="max-w-4xl mx-auto border-primary/20 hover:border-primary/50 bg-card/50 backdrop-blur transition-all">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-center gap-2 text-2xl">
+                <Icon name="Users" size={28} className="text-primary" />
+                Реферальная программа
+              </CardTitle>
+              <CardDescription className="text-center text-base">
+                Приглашайте друзей и получайте бонусы за каждую покупку!
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex flex-col items-center gap-3 p-4 bg-primary/10 rounded-lg border border-primary/20">
+                  <Icon name="Gift" size={40} className="text-primary" />
+                  <div className="text-center">
+                    <p className="font-bold text-lg">10% кэшбэк</p>
+                    <p className="text-sm text-muted-foreground">От покупки друга</p>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center gap-3 p-4 bg-primary/10 rounded-lg border border-primary/20">
+                  <Icon name="Percent" size={40} className="text-primary" />
+                  <div className="text-center">
+                    <p className="font-bold text-lg">15% скидка</p>
+                    <p className="text-sm text-muted-foreground">Другу на первую покупку</p>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center gap-3 p-4 bg-primary/10 rounded-lg border border-primary/20">
+                  <Icon name="Infinity" size={40} className="text-primary" />
+                  <div className="text-center">
+                    <p className="font-bold text-lg">Безлимит</p>
+                    <p className="text-sm text-muted-foreground">Приглашений друзей</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <Button 
+                  size="lg" 
+                  className="flex-1 gap-2"
+                  onClick={() => setReferralDialogOpen(true)}
+                >
+                  <Icon name="Link" size={20} />
+                  Получить реферальную ссылку
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
           <Card className="max-w-2xl mx-auto">
             <CardHeader>
               <CardTitle className="flex items-center justify-center gap-2">
@@ -241,6 +338,115 @@ const Shop = () => {
           </Card>
         </div>
       </main>
+
+      <Dialog open={giftDialogOpen} onOpenChange={setGiftDialogOpen}>
+        <DialogContent className="sm:max-w-md border-primary/20 bg-card/95 backdrop-blur">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-2xl">
+              <Icon name="Gift" size={28} className="text-primary" />
+              Подарить тариф другу
+            </DialogTitle>
+            <DialogDescription>
+              {selectedTariff && `Вы дарите тариф "${selectedTariff.name}" (${selectedTariff.price}₽)`}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="friend-email">Email друга</Label>
+              <Input
+                id="friend-email"
+                type="email"
+                placeholder="friend@example.com"
+                value={friendEmail}
+                onChange={(e) => setFriendEmail(e.target.value)}
+              />
+            </div>
+
+            <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
+              <div className="flex items-start gap-3">
+                <Icon name="Info" size={24} className="text-primary shrink-0" />
+                <div className="text-sm">
+                  <p className="font-semibold mb-1">Как это работает?</p>
+                  <ul className="space-y-1 text-muted-foreground">
+                    <li>• Друг получит письмо с подарком</li>
+                    <li>• Тариф активируется автоматически</li>
+                    <li>• Вы получите 5% кэшбэк на счёт</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <Button 
+              size="lg" 
+              className="w-full gap-2"
+              onClick={handleGiftTariff}
+            >
+              <Icon name="Send" size={20} />
+              Отправить подарок
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={referralDialogOpen} onOpenChange={setReferralDialogOpen}>
+        <DialogContent className="sm:max-w-md border-primary/20 bg-card/95 backdrop-blur">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-2xl">
+              <Icon name="Users" size={28} className="text-primary" />
+              Ваша реферальная ссылка
+            </DialogTitle>
+            <DialogDescription>
+              Делитесь ссылкой и зарабатывайте на покупках друзей!
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Реферальная ссылка</Label>
+              <div className="flex gap-2">
+                <Input
+                  value={`${window.location.origin}/shop?ref=friend123`}
+                  readOnly
+                  className="font-mono text-sm"
+                />
+                <Button onClick={handleCopyReferralLink}>
+                  <Icon name="Copy" size={18} />
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-semibold">Приглашено друзей</p>
+                    <p className="text-2xl font-bold text-primary">0</p>
+                  </div>
+                  <Icon name="Users" size={40} className="text-primary" />
+                </div>
+              </div>
+
+              <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-semibold">Заработано бонусов</p>
+                    <p className="text-2xl font-bold text-primary">0₽</p>
+                  </div>
+                  <Icon name="Wallet" size={40} className="text-primary" />
+                </div>
+              </div>
+            </div>
+
+            <Button 
+              size="lg" 
+              className="w-full gap-2"
+              onClick={handleCopyReferralLink}
+            >
+              <Icon name="Share2" size={20} />
+              Поделиться ссылкой
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
