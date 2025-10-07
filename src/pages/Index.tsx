@@ -73,6 +73,10 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <Button variant="outline" onClick={() => window.location.href = '/shop'} className="gap-2">
+                <Icon name="Store" size={20} />
+                Магазин
+              </Button>
               <Badge variant="outline" className="text-sm">
                 {servers.length} / {MAX_SERVERS} серверов
               </Badge>
