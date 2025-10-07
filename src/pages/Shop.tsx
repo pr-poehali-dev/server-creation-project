@@ -67,6 +67,22 @@ const Shop = () => {
   const tariffs = [
     {
       id: 0,
+      name: "FREE",
+      price: 0,
+      icon: "Gift",
+      color: "bg-green-600",
+      isFree: true,
+      features: [
+        "Онлайн с 0 до 10 игроков",
+        "0.60 GB RAM",
+        "Доступ к консоли",
+        "Управление игроками",
+        "Доступ к файлам игры",
+        "Базовые команды"
+      ]
+    },
+    {
+      id: 1,
       name: "Мини",
       price: 1,
       icon: "Bomb",
@@ -241,13 +257,20 @@ const Shop = () => {
             <Card 
               key={tariff.id} 
               className={`relative overflow-hidden transition-all hover:scale-105 bg-card/50 backdrop-blur ${
-                (tariff as any).isNew 
-                  ? 'ring-4 ring-yellow-500 border-yellow-500/50 shadow-[0_0_40px_rgba(234,179,8,0.6)] hover:shadow-[0_0_60px_rgba(234,179,8,0.8)] animate-pulse' 
-                  : tariff.popular 
-                    ? 'ring-2 ring-primary shadow-2xl shadow-primary/30 animate-pulse border-primary/20 hover:border-primary/50' 
-                    : 'border-primary/20 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/20'
+                (tariff as any).isFree
+                  ? 'ring-4 ring-green-500 border-green-500/50 shadow-[0_0_40px_rgba(34,197,94,0.6)] hover:shadow-[0_0_60px_rgba(34,197,94,0.8)]'
+                  : (tariff as any).isNew 
+                    ? 'ring-4 ring-yellow-500 border-yellow-500/50 shadow-[0_0_40px_rgba(234,179,8,0.6)] hover:shadow-[0_0_60px_rgba(234,179,8,0.8)] animate-pulse' 
+                    : tariff.popular 
+                      ? 'ring-2 ring-primary shadow-2xl shadow-primary/30 animate-pulse border-primary/20 hover:border-primary/50' 
+                      : 'border-primary/20 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/20'
               }`}
             >
+              {(tariff as any).isFree && (
+                <div className="absolute top-0 right-0 bg-gradient-to-r from-green-400 to-green-600 text-white px-4 py-1 text-sm font-bold shadow-lg shadow-green-500/50">
+                  БЕСПЛАТНО
+                </div>
+              )}
               {tariff.popular && (
                 <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-4 py-1 text-sm font-bold">
                   ПОПУЛЯРНЫЙ
@@ -265,8 +288,14 @@ const Shop = () => {
                 </div>
                 <CardTitle className="text-2xl">{tariff.name}</CardTitle>
                 <CardDescription>
-                  <span className="text-4xl font-bold text-foreground">{tariff.price}₽</span>
-                  <span className="text-muted-foreground">/месяц</span>
+                  {tariff.price === 0 ? (
+                    <span className="text-4xl font-bold text-green-500">Бесплатно</span>
+                  ) : (
+                    <>
+                      <span className="text-4xl font-bold text-foreground">{tariff.price}₽</span>
+                      <span className="text-muted-foreground">/месяц</span>
+                    </>
+                  )}
                 </CardDescription>
               </CardHeader>
 
@@ -284,11 +313,11 @@ const Shop = () => {
               <CardFooter className="flex-col gap-2">
                 <Button 
                   className="w-full gap-2" 
-                  variant={tariff.popular || (tariff as any).isNew ? "default" : "outline"}
+                  variant={(tariff as any).isFree || tariff.popular || (tariff as any).isNew ? "default" : "outline"}
                   size="lg"
                 >
-                  <Icon name="ShoppingCart" size={20} />
-                  Купить тариф
+                  <Icon name={(tariff as any).isFree ? "Download" : "ShoppingCart"} size={20} />
+                  {(tariff as any).isFree ? "Получить бесплатно" : "Купить тариф"}
                 </Button>
                 <Button 
                   className="w-full gap-2" 
