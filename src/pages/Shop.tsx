@@ -119,7 +119,7 @@ const Shop = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black">
       <header className="border-b border-border bg-card">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -145,8 +145,8 @@ const Shop = () => {
           {tariffs.map((tariff) => (
             <Card 
               key={tariff.id} 
-              className={`relative overflow-hidden transition-all hover:scale-105 ${
-                tariff.popular ? 'ring-2 ring-primary shadow-2xl shadow-primary/20' : ''
+              className={`relative overflow-hidden transition-all hover:scale-105 border-primary/20 hover:border-primary/50 bg-card/50 backdrop-blur ${
+                tariff.popular ? 'ring-2 ring-primary shadow-2xl shadow-primary/30 animate-pulse' : 'hover:shadow-lg hover:shadow-primary/20'
               }`}
             >
               {tariff.popular && (

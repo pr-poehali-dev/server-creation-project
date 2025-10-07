@@ -156,7 +156,7 @@ const Index = () => {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {servers.map((server) => (
-            <Card key={server.id} className="hover:shadow-lg transition-shadow">
+            <Card key={server.id} className="hover:shadow-lg hover:shadow-primary/20 transition-all hover:scale-105 border-primary/20 hover:border-primary/50 bg-card/50 backdrop-blur">
               <CardHeader>
                 <div className="flex items-start gap-3">
                   <Avatar className="w-14 h-14">
