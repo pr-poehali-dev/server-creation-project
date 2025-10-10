@@ -319,7 +319,54 @@ const Shop = () => {
           </div>
         )}
 
-        <div className="mt-16 max-w-2xl mx-auto">
+        <div className="mt-16 space-y-6 max-w-2xl mx-auto">
+          <Card className="border-primary/20 bg-card/50 backdrop-blur">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-center gap-2 text-2xl">
+                <Icon name="Server" size={28} className="text-primary" />
+                Информация о сервере
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between p-4 bg-primary/10 rounded-lg border border-primary/20">
+                <div className="flex items-center gap-3">
+                  <Icon name="Globe" size={24} className="text-primary" />
+                  <div>
+                    <p className="font-semibold text-lg">IP адрес сервера</p>
+                    <p className="text-sm text-muted-foreground font-mono">mcAcidTime.ru</p>
+                  </div>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    navigator.clipboard.writeText("mcAcidTime.ru");
+                    toast({
+                      title: "Скопировано!",
+                      description: "IP адрес скопирован в буфер обмена"
+                    });
+                  }}
+                >
+                  <Icon name="Copy" size={16} />
+                </Button>
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-green-500/10 rounded-lg border border-green-500/20">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
+                  <div>
+                    <p className="font-semibold text-lg">Онлайн игроков</p>
+                    <p className="text-sm text-muted-foreground">Сервер работает</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-3xl font-bold text-green-500">78</p>
+                  <p className="text-sm text-muted-foreground">/ 100</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           <Card className="border-primary/20 bg-card/50 backdrop-blur">
             <CardHeader>
               <CardTitle className="flex items-center justify-center gap-2 text-2xl">
