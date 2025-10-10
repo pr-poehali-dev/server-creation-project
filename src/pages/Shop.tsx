@@ -45,7 +45,7 @@ const Shop = () => {
     setFriendEmail("");
   };
 
-  const handleGrantTariff = async () => {
+  const handleGrantTariff = () => {
     if (!grantUserId.trim()) {
       toast({
         title: "Ошибка",
@@ -54,43 +54,10 @@ const Shop = () => {
       });
       return;
     }
-
-    const serverName = `${selectedTariff?.name} Server для ${grantUserId}`;
-    const serverId = `srv-${Date.now()}`;
-    
-    const newServer = {
-      id: serverId,
-      name: serverName,
-      version: '1.20.1',
-      customId: `${selectedTariff?.name.toLowerCase()}-${grantUserId.split('@')[0]}-${Date.now()}`,
-      players: 0,
-      maxPlayers: selectedTariff?.name === 'FREE' ? 10 : selectedTariff?.name === 'БАЗОВЫЙ' ? 20 : selectedTariff?.name === 'ПОПУЛЯРНЫЙ' ? 50 : 100,
-      status: 'online',
-      plugins: []
-    };
-
-    try {
-      await fetch(BACKEND_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-User-Email': grantUserId
-        },
-        body: JSON.stringify({ servers: [newServer] })
-      });
-
-      toast({
-        title: "Тариф выдан! 🔑",
-        description: `Тариф ${selectedTariff?.name} и сервер выданы пользователю ${grantUserId}`,
-      });
-    } catch (error) {
-      toast({
-        title: "Ошибка",
-        description: "Не удалось выдать тариф. Попробуйте еще раз",
-        variant: "destructive"
-      });
-    }
-
+    toast({
+      title: "Тариф выдан! 🔑",
+      description: `Тариф ${selectedTariff?.name} выдан пользователю ${grantUserId}`,
+    });
     setAdminGrantDialogOpen(false);
     setGrantUserId("");
   };
