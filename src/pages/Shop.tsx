@@ -24,6 +24,8 @@ const Shop = () => {
   const [grantServer, setGrantServer] = useState("mcAcidTime.ru");
   const [authEmail, setAuthEmail] = useState("");
   const [authPassword, setAuthPassword] = useState("");
+  const [dukeTimer, setDukeTimer] = useState<number | null>(null);
+  const [dukeTimeLeft, setDukeTimeLeft] = useState(25 * 60);
 
   const ADMIN_EMAIL = "admin@funacid.com";
   const ADMIN_PASSWORD = "admin123";
@@ -37,7 +39,62 @@ const Shop = () => {
       setUserEmail(savedEmail);
       setIsAdmin(savedAdmin === "true");
     }
+
+    const savedTimer = localStorage.getItem("dukeTimerEnd");
+    if (savedTimer) {
+      const endTime = parseInt(savedTimer);
+      const now = Date.now();
+      if (now < endTime) {
+        const secondsLeft = Math.floor((endTime - now) / 1000);
+        setDukeTimeLeft(secondsLeft);
+        setDukeTimer(endTime);
+      } else {
+        localStorage.removeItem("dukeTimerEnd");
+      }
+    }
   }, []);
+
+  useEffect(() => {
+    if (dukeTimer) {
+      const interval = setInterval(() => {
+        const now = Date.now();
+        const secondsLeft = Math.floor((dukeTimer - now) / 1000);
+        
+        if (secondsLeft <= 0) {
+          setDukeTimer(null);
+          setDukeTimeLeft(25 * 60);
+          localStorage.removeItem("dukeTimerEnd");
+          clearInterval(interval);
+          toast({
+            title: "Акция завершена!",
+            description: "Тариф Герцог снова платный",
+            variant: "destructive"
+          });
+        } else {
+          setDukeTimeLeft(secondsLeft);
+        }
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, [dukeTimer, toast]);
+
+  const startDukePromo = () => {
+    const endTime = Date.now() + 25 * 60 * 1000;
+    setDukeTimer(endTime);
+    setDukeTimeLeft(25 * 60);
+    localStorage.setItem("dukeTimerEnd", endTime.toString());
+    toast({
+      title: "Акция запущена!",
+      description: "Тариф Герцог бесплатен 25 минут",
+    });
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const handleLogin = () => {
     if (authEmail === ADMIN_EMAIL && authPassword === ADMIN_PASSWORD) {
@@ -115,7 +172,7 @@ const Shop = () => {
   };
 
   const privileges = [
-    { name: "Герцог", price: 339, icon: "Crown", color: "bg-gradient-to-r from-purple-600 to-pink-600", popular: true },
+    { name: "Герцог", price: dukeTimer ? 0 : 339, icon: "Crown", color: "bg-gradient-to-r from-purple-600 to-pink-600", popular: true },
     { name: "Князь", price: 256, icon: "ShieldCheck", color: "bg-gradient-to-r from-blue-600 to-purple-600" },
     { name: "Титан", price: 199, icon: "Zap", color: "bg-gradient-to-r from-orange-500 to-red-600" },
     { name: "Элита", price: 127, icon: "Star", color: "bg-gradient-to-r from-yellow-500 to-orange-500" },
@@ -147,6 +204,13 @@ const Shop = () => {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            {isAdmin && !dukeTimer && (
+              <Button onClick={startDukePromo} className="gap-2 bg-green-600 hover:bg-green-700">
+                <Icon name="Gift" size={20} />
+                Запустить акцию
+              </Button>
+            )}
+            
             {!isAuthenticated ? (
               <Button onClick={() => setShowAuthDialog(true)} className="gap-2">
                 <Icon name="LogIn" size={20} />
@@ -223,9 +287,15 @@ const Shop = () => {
                     : "border-primary/20 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/20"
                 }`}
               >
-                {privilege.popular && (
+                {privilege.popular && !dukeTimer && (
                   <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-4 py-1 text-sm font-bold">
                     ПОПУЛЯРНЫЙ
+                  </div>
+                )}
+                
+                {privilege.name === "Герцог" && dukeTimer && (
+                  <div className="absolute top-0 right-0 bg-green-500 text-white px-4 py-1 text-sm font-bold animate-pulse">
+                    БЕСПЛАТНО {formatTime(dukeTimeLeft)}
                   </div>
                 )}
                 
@@ -235,7 +305,14 @@ const Shop = () => {
                   </div>
                   <CardTitle className="text-2xl">{privilege.name}</CardTitle>
                   <CardDescription>
-                    <span className="text-4xl font-bold text-foreground">{privilege.price}₽</span>
+                    {privilege.name === "Герцог" && dukeTimer ? (
+                      <div className="space-y-1">
+                        <span className="text-4xl font-bold text-green-500">БЕСПЛАТНО</span>
+                        <div className="text-sm line-through text-muted-foreground">339₽</div>
+                      </div>
+                    ) : (
+                      <span className="text-4xl font-bold text-foreground">{privilege.price}₽</span>
+                    )}
                   </CardDescription>
                 </CardHeader>
 
