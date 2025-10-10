@@ -15,7 +15,7 @@ const Shop = () => {
     firstName: "none",
     lastName: "none",
     email: "none",
-    balance: "0.00"
+    balance: "3000.00"
   };
 
   const tabs = [
