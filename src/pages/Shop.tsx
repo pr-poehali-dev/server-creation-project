@@ -3,21 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
-import { Badge } from "@/components/ui/badge";
+
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
 
 const Shop = () => {
   const navigate = useNavigate();
-  const [selectedTariff, setSelectedTariff] = useState<any>(null);
-  const [giftDialogOpen, setGiftDialogOpen] = useState(false);
-  const [friendEmail, setFriendEmail] = useState("");
-  const [referralDialogOpen, setReferralDialogOpen] = useState(false);
-  const [adminGrantDialogOpen, setAdminGrantDialogOpen] = useState(false);
-  const [grantUserId, setGrantUserId] = useState("");
   const [selectedEmail, setSelectedEmail] = useState('');
+  const [referralDialogOpen, setReferralDialogOpen] = useState(false);
+  const [selectedTariff, setSelectedTariff] = useState<any>(null);
   const { toast } = useToast();
 
   const BACKEND_URL = 'https://functions.poehali.dev/d7adc20e-e211-4e7b-b230-aa3ffe6cd82c';
@@ -25,42 +20,6 @@ const Shop = () => {
   useEffect(() => {
     setSelectedEmail(localStorage.getItem('selectedEmail') || '');
   }, []);
-
-  const isDeveloper = true;
-
-  const handleGiftTariff = () => {
-    if (!friendEmail.trim()) {
-      toast({
-        title: "Ошибка",
-        description: "Введите email друга",
-        variant: "destructive"
-      });
-      return;
-    }
-    toast({
-      title: "Подарок отправлен! 🎁",
-      description: `Тариф ${selectedTariff?.name} отправлен на ${friendEmail}`
-    });
-    setGiftDialogOpen(false);
-    setFriendEmail("");
-  };
-
-  const handleGrantTariff = () => {
-    if (!grantUserId.trim()) {
-      toast({
-        title: "Ошибка",
-        description: "Введите ID или email пользователя",
-        variant: "destructive"
-      });
-      return;
-    }
-    toast({
-      title: "Тариф выдан! 🔑",
-      description: `Тариф ${selectedTariff?.name} выдан пользователю ${grantUserId}`,
-    });
-    setAdminGrantDialogOpen(false);
-    setGrantUserId("");
-  };
 
   const createServerForTariff = async (tariff: any) => {
     const serverName = `${tariff.name} Server`;
@@ -378,31 +337,7 @@ const Shop = () => {
                   <Icon name={(tariff as any).isFree ? "Download" : "ShoppingCart"} size={20} />
                   {(tariff as any).isFree ? "Получить бесплатно" : "Купить тариф"}
                 </Button>
-                <Button 
-                  className="w-full gap-2" 
-                  variant="secondary"
-                  size="lg"
-                  onClick={() => {
-                    setSelectedTariff(tariff);
-                    setGiftDialogOpen(true);
-                  }}
-                >
-                  <Icon name="Gift" size={20} />
-                  Подарить другу
-                </Button>
-                {isDeveloper && (
-                  <Button 
-                    className="w-full gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700" 
-                    size="lg"
-                    onClick={() => {
-                      setSelectedTariff(tariff);
-                      setAdminGrantDialogOpen(true);
-                    }}
-                  >
-                    <Icon name="Key" size={20} />
-                    Выдать тариф (DEV)
-                  </Button>
-                )}
+
               </CardFooter>
             </Card>
           ))}
@@ -477,55 +412,6 @@ const Shop = () => {
         </div>
       </main>
 
-      <Dialog open={giftDialogOpen} onOpenChange={setGiftDialogOpen}>
-        <DialogContent className="sm:max-w-md border-primary/20 bg-card/95 backdrop-blur">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-2xl">
-              <Icon name="Gift" size={28} className="text-primary" />
-              Подарить тариф другу
-            </DialogTitle>
-            <DialogDescription>
-              {selectedTariff && `Вы дарите тариф "${selectedTariff.name}" (${selectedTariff.price}₽)`}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="friend-email">Email друга</Label>
-              <Input
-                id="friend-email"
-                type="email"
-                placeholder="friend@example.com"
-                value={friendEmail}
-                onChange={(e) => setFriendEmail(e.target.value)}
-              />
-            </div>
-
-            <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
-              <div className="flex items-start gap-3">
-                <Icon name="Info" size={24} className="text-primary shrink-0" />
-                <div className="text-sm">
-                  <p className="font-semibold mb-1">Как это работает?</p>
-                  <ul className="space-y-1 text-muted-foreground">
-                    <li>• Друг получит письмо с подарком</li>
-                    <li>• Тариф активируется автоматически</li>
-                    <li>• Вы получите 5% кэшбэк на счёт</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <Button 
-              size="lg" 
-              className="w-full gap-2"
-              onClick={handleGiftTariff}
-            >
-              <Icon name="Send" size={20} />
-              Отправить подарок
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
       <Dialog open={referralDialogOpen} onOpenChange={setReferralDialogOpen}>
         <DialogContent className="sm:max-w-md border-primary/20 bg-card/95 backdrop-blur">
           <DialogHeader>
@@ -539,13 +425,11 @@ const Shop = () => {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>Реферальная ссылка</Label>
+              <p className="font-semibold">Реферальная ссылка</p>
               <div className="flex gap-2">
-                <Input
-                  value={`${window.location.origin}/shop?ref=friend123`}
-                  readOnly
-                  className="font-mono text-sm"
-                />
+                <div className="flex-1 p-2 bg-muted rounded-md font-mono text-sm break-all">
+                  {window.location.origin}/shop?ref=friend123
+                </div>
                 <Button onClick={handleCopyReferralLink}>
                   <Icon name="Copy" size={18} />
                 </Button>
@@ -586,58 +470,7 @@ const Shop = () => {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={adminGrantDialogOpen} onOpenChange={setAdminGrantDialogOpen}>
-        <DialogContent className="sm:max-w-md border-purple-500/50 bg-gradient-to-br from-card/95 to-purple-950/20 backdrop-blur">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-2xl">
-              <Icon name="ShieldCheck" size={28} className="text-purple-400" />
-              Выдать тариф (Разработчик)
-            </DialogTitle>
-            <DialogDescription>
-              {selectedTariff && `Выдача тарифа "${selectedTariff.name}" пользователю`}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="p-3 bg-purple-500/20 rounded-lg border border-purple-500/30 flex items-center gap-2">
-              <Icon name="AlertTriangle" size={20} className="text-purple-400" />
-              <p className="text-sm text-purple-200">Админ-панель для разработчиков</p>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="grant-user-id">ID или Email пользователя</Label>
-              <Input
-                id="grant-user-id"
-                type="text"
-                placeholder="user@example.com или user_id_123"
-                value={grantUserId}
-                onChange={(e) => setGrantUserId(e.target.value)}
-                className="border-purple-500/30"
-              />
-            </div>
-
-            <div className="p-4 bg-purple-500/10 rounded-lg border border-purple-500/20">
-              <div className="space-y-2 text-sm">
-                <p className="font-semibold text-purple-300">Что произойдёт:</p>
-                <ul className="space-y-1 text-muted-foreground">
-                  <li>✓ Тариф активируется мгновенно</li>
-                  <li>✓ Пользователь получит уведомление</li>
-                  <li>✓ Действие будет записано в лог</li>
-                  <li>✓ Без списания средств</li>
-                </ul>
-              </div>
-            </div>
-
-            <Button 
-              size="lg" 
-              className="w-full gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-              onClick={handleGrantTariff}
-            >
-              <Icon name="Key" size={20} />
-              Выдать тариф бесплатно
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
