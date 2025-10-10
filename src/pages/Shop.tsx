@@ -4,15 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
 
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Input } from "@/components/ui/input";
 
 const Shop = () => {
   const navigate = useNavigate();
   const [selectedEmail, setSelectedEmail] = useState('');
-  const [referralDialogOpen, setReferralDialogOpen] = useState(false);
-  const [selectedTariff, setSelectedTariff] = useState<any>(null);
   const { toast } = useToast();
 
   const BACKEND_URL = 'https://functions.poehali.dev/d7adc20e-e211-4e7b-b230-aa3ffe6cd82c';
@@ -72,14 +68,7 @@ const Shop = () => {
     }, 1500);
   };
 
-  const handleCopyReferralLink = () => {
-    const refLink = `${window.location.origin}/shop?ref=friend123`;
-    navigator.clipboard.writeText(refLink);
-    toast({
-      title: "Ссылка скопирована!",
-      description: "Отправьте реферальную ссылку другу"
-    });
-  };
+
 
   const tariffs = [
     {
@@ -247,132 +236,8 @@ const Shop = () => {
           ))}
         </div>
 
-        <div className="mt-16 space-y-6">
-          <Card className="max-w-4xl mx-auto border-primary/20 hover:border-primary/50 bg-card/50 backdrop-blur transition-all">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-center gap-2 text-2xl">
-                <Icon name="Users" size={28} className="text-primary" />
-                Реферальная программа
-              </CardTitle>
-              <CardDescription className="text-center text-base">
-                Приглашайте друзей и получайте бонусы за каждую покупку!
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="flex flex-col items-center gap-3 p-4 bg-primary/10 rounded-lg border border-primary/20">
-                  <Icon name="Gift" size={40} className="text-primary" />
-                  <div className="text-center">
-                    <p className="font-bold text-lg">10% кэшбэк</p>
-                    <p className="text-sm text-muted-foreground">От покупки друга</p>
-                  </div>
-                </div>
-                <div className="flex flex-col items-center gap-3 p-4 bg-primary/10 rounded-lg border border-primary/20">
-                  <Icon name="Percent" size={40} className="text-primary" />
-                  <div className="text-center">
-                    <p className="font-bold text-lg">15% скидка</p>
-                    <p className="text-sm text-muted-foreground">Другу на первую покупку</p>
-                  </div>
-                </div>
-                <div className="flex flex-col items-center gap-3 p-4 bg-primary/10 rounded-lg border border-primary/20">
-                  <Icon name="Infinity" size={40} className="text-primary" />
-                  <div className="text-center">
-                    <p className="font-bold text-lg">Безлимит</p>
-                    <p className="text-sm text-muted-foreground">Приглашений друзей</p>
-                  </div>
-                </div>
-              </div>
 
-              <div className="flex gap-3">
-                <Button 
-                  size="lg" 
-                  className="flex-1 gap-2"
-                  onClick={() => setReferralDialogOpen(true)}
-                >
-                  <Icon name="Link" size={20} />
-                  Получить реферальную ссылку
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="max-w-2xl mx-auto">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-center gap-2">
-                <Icon name="HelpCircle" size={24} />
-                Нужна помощь с выбором?
-              </CardTitle>
-              <CardDescription>
-                Наша команда поможет подобрать оптимальный тариф для вас
-              </CardDescription>
-            </CardHeader>
-            <CardFooter className="justify-center">
-              <Button variant="outline" className="gap-2">
-                <Icon name="MessageCircle" size={20} />
-                Связаться с поддержкой
-              </Button>
-            </CardFooter>
-          </Card>
-        </div>
       </main>
-
-      <Dialog open={referralDialogOpen} onOpenChange={setReferralDialogOpen}>
-        <DialogContent className="sm:max-w-md border-primary/20 bg-card/95 backdrop-blur">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-2xl">
-              <Icon name="Users" size={28} className="text-primary" />
-              Ваша реферальная ссылка
-            </DialogTitle>
-            <DialogDescription>
-              Делитесь ссылкой и зарабатывайте на покупках друзей!
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <p className="font-semibold">Реферальная ссылка</p>
-              <div className="flex gap-2">
-                <div className="flex-1 p-2 bg-muted rounded-md font-mono text-sm break-all">
-                  {window.location.origin}/shop?ref=friend123
-                </div>
-                <Button onClick={handleCopyReferralLink}>
-                  <Icon name="Copy" size={18} />
-                </Button>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-semibold">Приглашено друзей</p>
-                    <p className="text-2xl font-bold text-primary">0</p>
-                  </div>
-                  <Icon name="Users" size={40} className="text-primary" />
-                </div>
-              </div>
-
-              <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-semibold">Заработано бонусов</p>
-                    <p className="text-2xl font-bold text-primary">0₽</p>
-                  </div>
-                  <Icon name="Wallet" size={40} className="text-primary" />
-                </div>
-              </div>
-            </div>
-
-            <Button 
-              size="lg" 
-              className="w-full gap-2"
-              onClick={handleCopyReferralLink}
-            >
-              <Icon name="Share2" size={20} />
-              Поделиться ссылкой
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
 
 
     </div>
