@@ -11,10 +11,10 @@ const Shop = () => {
   const [activeTab, setActiveTab] = useState<"servers" | "websites" | "vds">("servers");
 
   const accountInfo = {
-    id: "377489",
-    firstName: "Nddnd",
-    lastName: "Djdjd",
-    email: "nikitasavin172@gmail.com",
+    id: "none",
+    firstName: "none",
+    lastName: "none",
+    email: "none",
     balance: "0.00"
   };
 
