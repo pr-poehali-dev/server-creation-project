@@ -1,15 +1,106 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const Shop = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedCategory, setSelectedCategory] = useState<"privileges" | "additional" | "tokens">("privileges");
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+  const [grantEmail, setGrantEmail] = useState("");
+  const [grantItem, setGrantItem] = useState("");
+  const [authEmail, setAuthEmail] = useState("");
+  const [authPassword, setAuthPassword] = useState("");
+
+  const ADMIN_EMAIL = "admin@funacid.com";
+  const ADMIN_PASSWORD = "admin123";
+
+  useEffect(() => {
+    const savedAuth = localStorage.getItem("isAuthenticated");
+    const savedEmail = localStorage.getItem("userEmail");
+    const savedAdmin = localStorage.getItem("isAdmin");
+    if (savedAuth === "true" && savedEmail) {
+      setIsAuthenticated(true);
+      setUserEmail(savedEmail);
+      setIsAdmin(savedAdmin === "true");
+    }
+  }, []);
+
+  const handleLogin = () => {
+    if (authEmail === ADMIN_EMAIL && authPassword === ADMIN_PASSWORD) {
+      setIsAuthenticated(true);
+      setIsAdmin(true);
+      setUserEmail(authEmail);
+      localStorage.setItem("isAuthenticated", "true");
+      localStorage.setItem("userEmail", authEmail);
+      localStorage.setItem("isAdmin", "true");
+      setShowAuthDialog(false);
+      toast({
+        title: "Вход выполнен",
+        description: "Добро пожаловать, администратор!"
+      });
+    } else if (authEmail && authPassword) {
+      setIsAuthenticated(true);
+      setIsAdmin(false);
+      setUserEmail(authEmail);
+      localStorage.setItem("isAuthenticated", "true");
+      localStorage.setItem("userEmail", authEmail);
+      localStorage.setItem("isAdmin", "false");
+      setShowAuthDialog(false);
+      toast({
+        title: "Вход выполнен",
+        description: `Добро пожаловать, ${authEmail}!`
+      });
+    } else {
+      toast({
+        title: "Ошибка",
+        description: "Введите email и пароль",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setIsAdmin(false);
+    setUserEmail("");
+    localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("isAdmin");
+    toast({
+      title: "Выход выполнен",
+      description: "До скорой встречи!"
+    });
+  };
+
+  const handleGrantAccess = () => {
+    if (!grantEmail || !grantItem) {
+      toast({
+        title: "Ошибка",
+        description: "Заполните все поля",
+        variant: "destructive"
+      });
+      return;
+    }
+    toast({
+      title: "Доступ выдан!",
+      description: `${grantItem} выдан для ${grantEmail}`
+    });
+    setGrantEmail("");
+    setGrantItem("");
+    setShowAdminPanel(false);
+  };
 
   const handlePurchase = (itemName: string, price: number) => {
     window.open("https://plutka.kesug.com/EzFunTimeEz.php", "_blank");
@@ -51,10 +142,34 @@ const Shop = () => {
               <p className="text-sm text-muted-foreground">Магазин привилегий</p>
             </div>
           </div>
-          <Button variant="ghost" className="gap-2" onClick={() => navigate("/")}>
-            <Icon name="ArrowLeft" size={20} />
-            Назад
-          </Button>
+          <div className="flex items-center gap-3">
+            {!isAuthenticated ? (
+              <Button onClick={() => setShowAuthDialog(true)} className="gap-2">
+                <Icon name="LogIn" size={20} />
+                Вход
+              </Button>
+            ) : (
+              <>
+                {isAdmin && (
+                  <Button onClick={() => setShowAdminPanel(true)} className="gap-2" variant="default">
+                    <Icon name="ShieldCheck" size={20} />
+                    Админ-панель
+                  </Button>
+                )}
+                <Badge variant="outline" className="text-sm">
+                  {userEmail}
+                </Badge>
+                <Button onClick={handleLogout} variant="ghost" className="gap-2">
+                  <Icon name="LogOut" size={20} />
+                  Выход
+                </Button>
+              </>
+            )}
+            <Button variant="ghost" className="gap-2" onClick={() => navigate("/")}>
+              <Icon name="ArrowLeft" size={20} />
+              Назад
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -229,6 +344,119 @@ const Shop = () => {
           </Card>
         </div>
       </main>
+
+      <Dialog open={showAuthDialog} onOpenChange={setShowAuthDialog}>
+        <DialogContent className="sm:max-w-md border-primary/20 bg-card/95 backdrop-blur">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-2xl">
+              <Icon name="LogIn" size={28} className="text-primary" />
+              Вход в систему
+            </DialogTitle>
+            <DialogDescription>
+              Войдите в свой аккаунт или зарегистрируйтесь
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="authEmail">Email</Label>
+              <Input
+                id="authEmail"
+                type="email"
+                placeholder="example@gmail.com"
+                value={authEmail}
+                onChange={(e) => setAuthEmail(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="authPassword">Пароль</Label>
+              <Input
+                id="authPassword"
+                type="password"
+                placeholder="••••••••"
+                value={authPassword}
+                onChange={(e) => setAuthPassword(e.target.value)}
+              />
+            </div>
+            <div className="p-3 bg-primary/10 rounded-lg border border-primary/20">
+              <p className="text-xs text-muted-foreground">
+                Для входа введите любой email и пароль. Для админ-доступа используйте: admin@funacid.com / admin123
+              </p>
+            </div>
+            <Button
+              size="lg"
+              className="w-full gap-2"
+              onClick={handleLogin}
+            >
+              <Icon name="LogIn" size={20} />
+              Войти
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showAdminPanel} onOpenChange={setShowAdminPanel}>
+        <DialogContent className="sm:max-w-md border-purple-500/50 bg-gradient-to-br from-card/95 to-purple-950/20 backdrop-blur">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-2xl">
+              <Icon name="ShieldCheck" size={28} className="text-purple-400" />
+              Админ-панель
+            </DialogTitle>
+            <DialogDescription>
+              Выдача доступов пользователям
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="p-3 bg-purple-500/20 rounded-lg border border-purple-500/30 flex items-center gap-2">
+              <Icon name="AlertTriangle" size={20} className="text-purple-400" />
+              <p className="text-sm text-purple-200">Только для администраторов</p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="grantEmail">Email пользователя</Label>
+              <Input
+                id="grantEmail"
+                type="email"
+                placeholder="user@example.com"
+                value={grantEmail}
+                onChange={(e) => setGrantEmail(e.target.value)}
+                className="border-purple-500/30"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="grantItem">Привилегия/Услуга</Label>
+              <Input
+                id="grantItem"
+                type="text"
+                placeholder="Герцог, Разбан, 1ТК и т.д."
+                value={grantItem}
+                onChange={(e) => setGrantItem(e.target.value)}
+                className="border-purple-500/30"
+              />
+            </div>
+
+            <div className="p-4 bg-purple-500/10 rounded-lg border border-purple-500/20">
+              <div className="space-y-2 text-sm">
+                <p className="font-semibold text-purple-300">Что произойдёт:</p>
+                <ul className="space-y-1 text-muted-foreground">
+                  <li>✓ Доступ будет выдан мгновенно</li>
+                  <li>✓ Пользователь получит уведомление</li>
+                  <li>✓ Действие будет записано в лог</li>
+                </ul>
+              </div>
+            </div>
+
+            <Button
+              size="lg"
+              className="w-full gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+              onClick={handleGrantAccess}
+            >
+              <Icon name="Gift" size={20} />
+              Выдать доступ
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
