@@ -21,7 +21,7 @@ const Shop = () => {
   const [grantEmail, setGrantEmail] = useState("");
   const [grantItem, setGrantItem] = useState("");
   const [grantNickname, setGrantNickname] = useState("");
-  const [grantServer, setGrantServer] = useState("mcAcidTime.ru");
+  const [grantServer, setGrantServer] = useState("SpookyTime.net");
   const [authEmail, setAuthEmail] = useState("");
   const [authPassword, setAuthPassword] = useState("");
   const [dukeTimer, setDukeTimer] = useState<number | null>(null);
@@ -414,14 +414,14 @@ const Shop = () => {
                   <Icon name="Globe" size={24} className="text-primary" />
                   <div>
                     <p className="font-semibold text-lg">IP адрес сервера</p>
-                    <p className="text-sm text-muted-foreground font-mono">mcAcidTime.ru</p>
+                    <p className="text-sm text-muted-foreground font-mono">SpookyTime.net</p>
                   </div>
                 </div>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    navigator.clipboard.writeText("mcAcidTime.ru");
+                    navigator.clipboard.writeText("SpookyTime.net");
                     toast({
                       title: "Скопировано!",
                       description: "IP адрес скопирован в буфер обмена"
@@ -441,8 +441,8 @@ const Shop = () => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-3xl font-bold text-green-500">78</p>
-                  <p className="text-sm text-muted-foreground">/ 100</p>
+                  <p className="text-3xl font-bold text-green-500">6783</p>
+                  <p className="text-sm text-muted-foreground">/ 14382</p>
                 </div>
               </div>
             </CardContent>
