@@ -20,6 +20,8 @@ const Shop = () => {
   const [userEmail, setUserEmail] = useState("");
   const [grantEmail, setGrantEmail] = useState("");
   const [grantItem, setGrantItem] = useState("");
+  const [grantNickname, setGrantNickname] = useState("");
+  const [grantServer, setGrantServer] = useState("mcAcidTime.ru");
   const [authEmail, setAuthEmail] = useState("");
   const [authPassword, setAuthPassword] = useState("");
 
@@ -85,7 +87,7 @@ const Shop = () => {
   };
 
   const handleGrantAccess = () => {
-    if (!grantEmail || !grantItem) {
+    if (!grantEmail || !grantItem || !grantNickname || !grantServer) {
       toast({
         title: "Ошибка",
         description: "Заполните все поля",
@@ -95,10 +97,12 @@ const Shop = () => {
     }
     toast({
       title: "Доступ выдан!",
-      description: `${grantItem} выдан для ${grantEmail}`
+      description: `${grantItem} выдан игроку ${grantNickname} на ${grantServer}`
     });
     setGrantEmail("");
     setGrantItem("");
+    setGrantNickname("");
+    setGrantServer("mcAcidTime.ru");
     setShowAdminPanel(false);
   };
 
@@ -458,8 +462,34 @@ const Shop = () => {
               <p className="text-sm text-purple-200">Только для администраторов</p>
             </div>
 
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="grantNickname">Ник игрока</Label>
+                <Input
+                  id="grantNickname"
+                  type="text"
+                  placeholder="Steve123"
+                  value={grantNickname}
+                  onChange={(e) => setGrantNickname(e.target.value)}
+                  className="border-purple-500/30"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="grantServer">IP сервера</Label>
+                <Input
+                  id="grantServer"
+                  type="text"
+                  placeholder="mcAcidTime.ru"
+                  value={grantServer}
+                  onChange={(e) => setGrantServer(e.target.value)}
+                  className="border-purple-500/30"
+                />
+              </div>
+            </div>
+
             <div className="space-y-2">
-              <Label htmlFor="grantEmail">Email пользователя</Label>
+              <Label htmlFor="grantEmail">Email покупателя</Label>
               <Input
                 id="grantEmail"
                 type="email"
@@ -486,8 +516,8 @@ const Shop = () => {
               <div className="space-y-2 text-sm">
                 <p className="font-semibold text-purple-300">Что произойдёт:</p>
                 <ul className="space-y-1 text-muted-foreground">
-                  <li>✓ Доступ будет выдан мгновенно</li>
-                  <li>✓ Пользователь получит уведомление</li>
+                  <li>✓ {grantNickname || "Игрок"} получит {grantItem || "доступ"} на сервере {grantServer}</li>
+                  <li>✓ Уведомление придёт на {grantEmail || "email покупателя"}</li>
                   <li>✓ Действие будет записано в лог</li>
                 </ul>
               </div>
